@@ -7,7 +7,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from surprise import SVD, Dataset, Reader
 
-st.set_page_config(page_title="Movie Reco Hybride", page_icon="🎬", layout="wide")
+st.set_page_config(page_title="Touvez votre prochain plaisir", page_icon="🎬", layout="wide")
 
 # --- CONFIGURATION TMDB ---
 # Remplacez par votre propre clé API si vous en avez une, sinon celle-ci est pour le test
@@ -174,7 +174,7 @@ if query:
             for i, (idx, row) in enumerate(results.iterrows()):
                 with cols[i % n_recs]:
                     poster_url = get_movie_poster(row['title'])
-                    #st.image(poster_url, use_container_width=True)
+                    
                     st.image(poster_url, width=200)
                     # On coupe le titre s'il est trop long pour la grille
                     short_title = (row['title'][:25] + '..') if len(row['title']) > 25 else row['title']
