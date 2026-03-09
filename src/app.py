@@ -138,7 +138,7 @@ if query:
             for i, (idx, row) in enumerate(st.session_state.recommendations.iterrows()):
                 if i < 5:
                     with cols[i]:
-                        st.image(get_movie_poster(row['title']), use_container_width=True)
+                        st.image(get_movie_poster(row['title']), width=200)
                         st.markdown(f"**{row['title'][:25]}**")
                         st.caption(f"⭐ {row['rating_mean']:.1f}")
     else:
