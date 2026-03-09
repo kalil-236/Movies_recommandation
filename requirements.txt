@@ -1,5 +1,6 @@
-matplotlib
+streamlit==1.31.0
 pandas
+numpy
 scikit-learn
-streamlit==1.54.0
 scikit-surprise
+matplotlib
