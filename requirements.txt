@@ -1,5 +1,5 @@
-matplotlib==3.10.8
-pandas>=2.0.0,<3.0.0
-scikit-learn==1.8.0
+matplotlib
+pandas
+scikit-learn
 streamlit==1.54.0
 scikit-surprise
