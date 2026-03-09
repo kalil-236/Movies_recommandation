@@ -253,84 +253,70 @@ if query:
         # Afficher les options trouvées
         options = matches.set_index('movieId')['title'].to_dict()
         
+        # --- CORRECTION ICI : Clé statique pour éviter le crash JS ---
         selected_id = st.selectbox(
             "📽️ Choisissez le film exact :", 
-            options.keys(), 
+            list(options.keys()), 
             format_func=lambda x: options[x],
-            key=f"selectbox_{query}"
+            key="movie_selector_stable" 
         )
         
         movie_info = df_final[df_final['movieId'] == selected_id].iloc[0]
         
-        # Affichage des informations du film
-        with st.expander("ℹ️ Informations sur ce film", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            col1.metric("📊 Nombre de votes", int(movie_info['rating_count']))
-            col2.metric("⭐ Note moyenne", f"{movie_info['rating_mean']:.2f}/5")
-            col3.metric("🎭 Genres", movie_info['genres'].count('|') + 1)
+        # Utilisation d'un container pour regrouper les résultats proprement
+        result_container = st.container()
+
+        with result_container:
+            # Affichage des informations du film
+            with st.expander("ℹ️ Informations sur ce film", expanded=True):
+                col1, col2, col3 = st.columns(3)
+                col1.metric("📊 Nombre de votes", int(movie_info['rating_count']))
+                col2.metric("⭐ Note moyenne", f"{movie_info['rating_mean']:.2f}/5")
+                col3.metric("🎭 Genres", movie_info['genres'].count('|') + 1)
+                
+                st.markdown(f"**Genres** : {movie_info['genres']}")
             
-            st.markdown(f"**Genres** : {movie_info['genres']}")
-        
-        # Bouton de recommandation
-        if st.button("🎬 Obtenir des recommandations", type="primary"):
-            with st.spinner("Calcul des recommandations en cours..."):
-                # Génération des recommandations
-                results, method_name = get_hybrid_recommendations(
-                    movie_id=selected_id,
-                    movie_title=movie_info['title'],
-                    rating_count=movie_info['rating_count'],
-                    n=n_recs
-                )
-                
-                # Affichage des résultats
-                st.success(f"Films recommandés après avoir vu : **{movie_info['title']}**")
-                
-                st.info(f"**Méthode utilisée** : {method_name}")
-                
-                # Tableau des recommandations
-                st.subheader(f"🎯 Top {len(results)} recommandations")
-                
-                # Formatage du tableau
-                display_df = results[['title', 'genres', 'rating_mean', 'rating_count']].copy()
-                display_df.columns = ['Titre', 'Genres', 'Note moyenne', 'Nombre de votes']
-                display_df['Note moyenne'] = display_df['Note moyenne'].apply(lambda x: f"{x:.2f}/5")
-                display_df['Nombre de votes'] = display_df['Nombre de votes'].astype(int)
-                
-                st.dataframe(
-                    display_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-                
-                # Statistiques des recommandations
-                with st.expander("📈 Statistiques des recommandations"):
-                    col1, col2 = st.columns(2)
-                    col1.metric(
-                        "Note moyenne des recommandations", 
-                        f"{results['rating_mean'].mean():.2f}/5"
+            # Bouton de recommandation
+            if st.button("🎬 Obtenir des recommandations", type="primary"):
+                with st.spinner("Calcul des recommandations en cours..."):
+                    # Génération des recommandations
+                    results, method_name = get_hybrid_recommendations(
+                        movie_id=selected_id,
+                        movie_title=movie_info['title'],
+                        rating_count=movie_info['rating_count'],
+                        n=n_recs
                     )
-                    col2.metric(
-                        "Popularité moyenne", 
-                        f"{int(results['rating_count'].mean())} votes"
+                    
+                    # Affichage des résultats
+                    st.success(f"Films recommandés après avoir vu : **{movie_info['title']}**")
+                    st.info(f"**Méthode utilisée** : {method_name}")
+                    
+                    # Tableau des recommandations
+                    st.subheader(f"🎯 Top {len(results)} recommandations")
+                    
+                    display_df = results[['title', 'genres', 'rating_mean', 'rating_count']].copy()
+                    display_df.columns = ['Titre', 'Genres', 'Note moyenne', 'Nombre de votes']
+                    display_df['Note moyenne'] = display_df['Note moyenne'].apply(lambda x: f"{x:.2f}/5")
+                    display_df['Nombre de votes'] = display_df['Nombre de votes'].astype(int)
+                    
+                    st.dataframe(
+                        display_df,
+                        use_container_width=True,
+                        hide_index=True
                     )
+                    
+                    # Statistiques des recommandations
+                    with st.expander("📈 Statistiques des recommandations"):
+                        c1, c2 = st.columns(2)
+                        c1.metric(
+                            "Note moyenne", 
+                            f"{results['rating_mean'].mean():.2f}/5"
+                        )
+                        c2.metric(
+                            "Popularité moyenne", 
+                            f"{int(results['rating_count'].mean())} votes"
+                        )
     else:
         st.warning(f"❌ Aucun film trouvé pour '{query}'. Essayez un autre terme de recherche.")
 else:
-    # Message d'accueil
     st.info("👆 Entrez le nom d'un film dans la barre de recherche pour commencer !")
-    
-    # Exemples de films à tester
-    with st.expander("💡 Films populaires à essayer"):
-        st.markdown("""
-        **Films d'action/science-fiction :**
-        - Matrix, Inception, Interstellar, Blade Runner
-        
-        **Films d'animation :**
-        - Toy Story, Finding Nemo, Shrek, Monsters Inc
-        
-        **Films dramatiques :**
-        - Shawshank Redemption, Godfather, Forrest Gump
-        
-        **Saga/Franchise :**
-        - Star Wars, Lord of the Rings, Harry Potter
-        """)
