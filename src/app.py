@@ -174,7 +174,8 @@ if query:
             for i, (idx, row) in enumerate(results.iterrows()):
                 with cols[i % n_recs]:
                     poster_url = get_movie_poster(row['title'])
-                    st.image(poster_url, use_container_width=True)
+                    #st.image(poster_url, use_container_width=True)
+                    st.image(poster_url, width=200)
                     # On coupe le titre s'il est trop long pour la grille
                     short_title = (row['title'][:25] + '..') if len(row['title']) > 25 else row['title']
                     st.markdown(f"**{short_title}**")
