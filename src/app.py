@@ -7,7 +7,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 from surprise import SVD, Dataset, Reader
 
-st.set_page_config(page_title="Touvez votre prochain plaisir", page_icon="🎬", layout="wide")
+st.set_page_config(page_title="Movie Reco Hybride", page_icon="🎬", layout="wide")
 
 # --- CONFIGURATION TMDB ---
 # Remplacez par votre propre clé API si vous en avez une, sinon celle-ci est pour le test
@@ -137,7 +137,7 @@ def get_hybrid_recommendations(movie_id, movie_title, rating_count, n):
     return results, method
 
 # --- INTERFACE STREAMLIT ---
-st.title("🎬 Movie Reco Hybride")
+st.title("🎬 Trouvez votre prochain plaisir")
 
 st.sidebar.header("⚙️ Paramètres")
 n_recs = st.sidebar.slider("Nombre de recommandations", 1, 10, 5)
